@@ -2,30 +2,31 @@ package com.github.belousovea.telegrambotcore.bot.actions;
 
 import com.github.belousovea.telegrambotcore.bot.BotAction;
 import com.github.belousovea.telegrambotcore.dialog.Dialog;
-import com.github.belousovea.telegrambotcore.services.UserService;
-import lombok.Data;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
-@Data
-public class StartAction implements BotAction {
-    private String name= "start";
-    private final UserService userService;
+public class HelpAction implements BotAction {
+
 
     @Override
     public SendMessage replyMessage(Dialog dialog, Update update) {
+        return SendMessage.builder()
+                .chatId(dialog.getChatId())
+                .text("This is a help message")
+                .build();
+    }
 
-
-    return SendMessage.builder()
-            .chatId(dialog.getChatId())
-            .text(String.format("Привет, %s! бот, который поможет вам управлять бизнесом", dialog.getUser().getUsername()))
-            .build();
+    @Override
+    public String getName() {
+        return "help";
     }
 
     @Override
     public boolean isApplicable(Dialog dialog, Update update) {
-        return false;
+        return update.hasMessage()
+                && update.getMessage().hasText()
+                && update.getMessage().getText().toLowerCase().startsWith("/help");
     }
 }
